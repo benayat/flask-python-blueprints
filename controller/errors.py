@@ -10,19 +10,16 @@ class InternalServerError(Error):
 class SchemaValidationError(Error):
     pass
 
-class MovieAlreadyExistsError(Error):
-    pass
-
-class UpdatingMovieError(Error):
-    pass
-
-class DeletingMovieError(Error):
-    pass
-
-class MovieDoesNotExistsError(Error):
-    pass
-
 class EmailAlreadyExistsError(Error):
+    pass
+
+class UpdateUserError(Error):
+    pass
+
+class DeleteUserError(Error):
+    pass
+
+class UserDoesNotExistsError(Error):
     pass
 
 class UnauthorizedError(Error):
@@ -43,19 +40,15 @@ errors = {
          "message": "Request is missing required fields",
          "status": 400
      },
-     "MovieAlreadyExistsError": {
-         "message": "Movie with given name already exists",
-         "status": 400
-     },
-     "UpdatingMovieError": {
-         "message": "Updating movie added by other is forbidden",
+     "UpdateUserError": {
+         "message": "Updating user added by other is forbidden",
          "status": 403
      },
-     "DeletingMovieError": {
-         "message": "Deleting movie added by other is forbidden",
+     "DeleteUserError": {
+         "message": "Deleting user added by other is forbidden",
          "status": 403
      },
-     "MovieDoesNotExistsError": {
+     "UserDoesNotExistsError": {
          "message": "Movie with given id doesn't exists",
          "status": 400
      },

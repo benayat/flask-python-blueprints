@@ -9,6 +9,9 @@ wheel = "*"
 webargs = "*"
 flask-mongoengine = "*"
 pymongo = "==3.11.0"
+bcrypt = "*"
+flask-jwt-extended = "*"
+pyjwt = "*"
 
 [dev-packages]
 
