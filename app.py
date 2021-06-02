@@ -1,5 +1,6 @@
 
 import os
+from werkzeug.exceptions import HTTPException
 
 from flask import Flask
 from database.db import initialize_db
@@ -14,7 +15,16 @@ app.config['MONGODB_SETTINGS'] = {
     'host': "mongodb+srv://benayat:fmWAK3TLrJwHxr8@cluster0.ptwdq.mongodb.net/moviesDB?retryWrites=true&w=majority",
 }
 initialize_db(app)
+
 app.register_blueprint(users)
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+
+
 app.run()
 # app.run(debug=True)
 

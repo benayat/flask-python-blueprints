@@ -16,10 +16,16 @@ users = Blueprint('users', __name__)
 
 @users.route('/users',methods=["GET"])
 def get_users():
-    print("getting all users")
-    users=User.objects().to_json()
-    return Response(users,mimetype="application/json", status=200)
-    
+    try:
+        print("getting all users")
+        users=User.objects().to_json()
+        if not users:
+            raise DoesNotExist
+        return Response(users,mimetype="application/json", status=200)
+    except DoesNotExist as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=404)
+
+        
 # I prefer to use the Response class, but since it can't return many types as data, 
 # I'll just serialize the dictionary to a json string with json.dumps.
 
@@ -33,10 +39,10 @@ def sign_up():
         id=user.id
         print(str(id))
         return Response(json.dumps({'id':str(id)}),mimetype="application/json",status=201)
-    except NotUniqueError:
-        raise EmailAlreadyExistsError
+    except NotUniqueError as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=400)
     except Exception as e:
-        raise InternalServerError
+        return Response(json.dumps(e.args), mimetype="application/json", status=500)
 
 @users.route("/users/login", methods=["POST"])
 def login():
@@ -53,10 +59,11 @@ def login():
             return  {'token': user.token}, 200
         else:
             raise UnauthorizedError
-    except UnauthorizedError:
-        raise UnauthorizedError
-    except Exception:
-        raise InternalServerError
+    except UnauthorizedError as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=401)
+
+    except Exception as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=500)
 
 @users.route("/users/<string:email>",methods=["PUT"])
 @jwt_required()
@@ -65,12 +72,12 @@ def update_password(email):
         body=request.get_json()
         User.objects.get(email=email).update(**body)
         return 'updated successfuly', 200
-    except InvalidQueryError:
-        raise SchemaValidationError
-    except DoesNotExist:
-        raise UpdateUserError
-    except Exception:
-        raise InternalServerError 
+    except InvalidQueryError as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=401)
+    except DoesNotExist as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=404)
+    except Exception as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=500)
     
 @users.route('/users/<string:id>',methods=["DELETE"])
 @jwt_required()
@@ -78,10 +85,10 @@ def delete_user(id):
     try:
         User.objects.get(id=id).delete()
         return '',200
-    except DoesNotExist:
-        raise UserDoesNotExistsError
-    except Exception:
-        raise InternalServerError
+    except DoesNotExist as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=404)
+    except Exception as e:
+        return Response(json.dumps(e.args), mimetype="application/json", status=500)
 
 """ 
 thoughts:
@@ -89,3 +96,4 @@ thoughts:
 - accessing - do I even need the Id if the email is unique? or just use the email?
 
  """
+ 
